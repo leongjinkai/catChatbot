@@ -17,4 +17,5 @@ Create a .env file in catGPT folder with the following variables:
 Do remember to run npm install for catgpt_fe directory to install the required modules.
 
 You can run the backend server using this command "fastapi dev main.py" - This should run on PORT:8000
+
 You can run the frontend server using this command "npm run dev" - This should run on PORT:3000
