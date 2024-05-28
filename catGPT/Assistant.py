@@ -1,3 +1,4 @@
+import json
 from dotenv import load_dotenv
 import os
 from openai import OpenAI
@@ -10,19 +11,33 @@ load_dotenv()
 client = OpenAI()
 OpenAI.api_key = os.getenv('OPENAI_API_KEY')
 
-def get_cat_image():
+def get_cat_image(limit: int) -> list[str]:
+    payload = {'limit': limit}
+    headers = {'x-api-key': os.getenv('CATAPI_API_KEY')}
     api_url= "https://api.thecatapi.com/v1/images/search"
-    response = requests.get(api_url).json()
+    response = requests.get(api_url, headers=headers, params=payload).json()
     print(response)
-    cat_image = response[0].get("url")
-    return cat_image
+    catImageUrls = []
+    for entry in response:
+        catImageUrls.append(entry.get("url"))
+    return catImageUrls
 
 tools = [
     {
         "type": "function",
         "function": {
             "name": "get_cat_image",
-            "description": "Get a random cat image"
+            "description": "Get a random cat image",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "limit": {
+                        "type": "integer",
+                        "description": "The number of cat images to show. e.g. 1, 2, 10",
+                    }
+                },
+                "required": ["limit"]
+            }
         }
     }
 ]
@@ -45,13 +60,13 @@ def chat_completion_request(messages, tools=None, tool_choice=None, model=os.get
 messages = []
 
 # Step 1: Add a Message to a MessageList
-def createMessageForAI(message) -> str:
+def createMessageForAI(message) -> list[str]:
     print(f"This is the message object: {message} \n")
     messages.append({"role": "user", "content": message})
     return runAssistant()
 
 # Step 2: Run the Assistant
-def runAssistant() -> str:
+def runAssistant() -> list[str]:
     chat_response = chat_completion_request(
     messages, tools=tools
     )
@@ -62,8 +77,9 @@ def runAssistant() -> str:
 
     if assistant_message.tool_calls != None:
         messages.clear()
-        return get_cat_image()
+        numCatImages = json.loads(assistant_message.tool_calls[0].function.arguments).get("limit")
+        return get_cat_image(limit=numCatImages)
     else:
         print(assistant_message.content)
-        return assistant_message.content
+        return [assistant_message.content]
     
