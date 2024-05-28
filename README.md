@@ -14,8 +14,19 @@ Create a .env file in catGPT folder with the following variables:
 2. CATAPI_API_KEY (You can get the API key when you sign up at https://thecatapi.com/)
 3. GPT_MODEL (You can select the GPT model depending on your needs, I use gpt-4o)
 
-Do remember to run npm install for catgpt_fe directory to install the required modules.
+Do remember to:
+1. run `npm install` for catgpt_fe directory to install the required node modules.
 
-You can run the backend server using this command "fastapi dev main.py" - This should run on PORT:8000
+Do remember to:
+1. activate the virtual environment for catGPT directory using `source venv/bin/activate` and 
+2. Install the required dependencies using `pip3 install -r requirements.txt`
 
-You can run the frontend server using this command "npm run dev" - This should run on PORT:3000
+You can run the backend server using this command `fastapi dev main.py` - This should run on PORT:8000
+
+You can run the frontend server using this command `npm run dev` - This should run on PORT:3000
+
+# Future Enhancements
+1. Making full use of function calls from OpenAI by including multiple functions and populating of arguments
+2. Touching up on UI for better visual aesthetics
+3. Text input autocomplete
+4. Text bubble prompts
