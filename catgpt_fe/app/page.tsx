@@ -20,22 +20,25 @@ export default function Home() {
   }, [response]);
 
   useEffect(() => {
-    if (message.length > 0) {
+    if (userSentMessage) {
+      getCatImage({ message, setResponse });
+      setUserSentMessage(false);
+      setMessage("");
+    }
+  }, [conversationList]);
+
+  useEffect(() => {
+    if (userSentMessage && message.length > 0) {
       setConversationList([
         ...conversationList,
         { id: crypto.randomUUID(), content: [message], role: ROLE.User },
       ]);
-      setMessage("");
     }
   }, [userSentMessage]);
 
-  const sendMessage = async (
-    e: FormEvent<HTMLFormElement>,
-    message: string
-  ) => {
+  const sendMessage = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setUserSentMessage(!userSentMessage);
-    getCatImage({ message, setResponse });
+    setUserSentMessage(true);
   };
 
   const renderConversation = conversationList.map((message) => {
@@ -46,7 +49,7 @@ export default function Home() {
           message.role == ROLE.User
             ? "self-start bg-teal-900"
             : "self-end text-right bg-sky-900"
-        } whitespace-pre-line p-4 rounded-md w-3/4`}
+        } whitespace-pre-line p-4 rounded-md w-fit max-w-[75%]`}
       >
         <div className="font-bold text-xl">
           {message.role === ROLE.User ? "User" : "AI"}
@@ -75,7 +78,7 @@ export default function Home() {
         </div>
         <form
           className="flex gap-4 justify-between"
-          onSubmit={(e) => sendMessage(e, message)}
+          onSubmit={(e) => sendMessage(e)}
         >
           <div className="grow">
             <input
